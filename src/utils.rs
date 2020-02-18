@@ -36,6 +36,10 @@ pub fn load_saved_view(
             views::intro::intro::intro_1(siv, state_manager);
             None
         }
+        "interface" => {
+            views::interface::interface::interface(siv, state_manager);
+            None
+        }
         _ => Some("View to be loaded not recognised.".to_string()),
     }
 }
