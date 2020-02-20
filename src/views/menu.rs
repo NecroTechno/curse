@@ -1,8 +1,9 @@
 //use crate::logger::curse_log;
 use crate::state::StateManager;
 use crate::state_retr;
-use crate::utils::{button_press_se, focus_se, load_saved_view, view_open, logo_ani_frames};
+use crate::utils::{button_press_se, focus_se, load_saved_view, view_open};
 use crate::vannah::{Vannah, VannahConfig};
+use crate::views::common::logo_ani_generator;
 use crate::views::intro::intro::intro_1;
 
 use cursive::align::HAlign;
@@ -20,16 +21,10 @@ const VIEW_CATEGORY: &str = "menu";
 pub fn menu(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
     view_open(siv, state_manager, VIEW_CATEGORY);
 
-    let animator_config = VannahConfig {
-        ani_ref: "title_ref",
-        frames: logo_ani_frames(),
-        // Counter has to start at 1 to account for initial TextView frame
-        vannah: Rc::new(RefCell::new(Vannah { counter: 1 })),
-    };
+    let (animator_config, logo) = logo_ani_generator();
 
-    let title = TextView::new(animator_config.frames[0]).with_name(animator_config.ani_ref);
     let menu_layout = LinearLayout::vertical()
-        .child(title)
+        .child(logo)
         .child(TextView::new("\n A game by Eden").h_align(HAlign::Center));
 
     state_retr!(state_manager)
