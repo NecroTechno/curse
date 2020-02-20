@@ -2,7 +2,7 @@
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, view_open};
-use crate::vannah::{Vannah, VannahConfig};
+use crate::vannah::{Vannah, VannahConfig, animate};
 use crate::views::common::logo_ani_generator;
 use crate::views::interface::VIEW_CATEGORY;
 
@@ -13,7 +13,7 @@ use cursive::event::{Event, EventTrigger};
 use cursive::view::Nameable;
 use cursive::views::{
     Button, Dialog, EditView, LinearLayout, OnEventView, PaddedView, Panel, ResizedView,
-    ScrollView, TextView,
+    ScrollView, TextView, Canvas, ListView
 };
 use cursive::Cursive;
 
@@ -32,6 +32,9 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
         }))
         .child(Button::new("Quit.", |s| s.quit()));
 
+    let state = String::new();
+    let canvas = Canvas::new(state);
+
     let layout = PaddedView::lrtb(
         1,
         1,
@@ -39,7 +42,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
         1,
         LinearLayout::horizontal()
             .child(ResizedView::with_full_screen(
-                Panel::new(TextView::new("Test.")).title("Title 1"),
+                Panel::new(canvas).title("Title 1"),
             ))
             .child(
                 LinearLayout::vertical()
@@ -56,9 +59,9 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
                     .child(ResizedView::with_full_height(
                         // Notifications panel
                         Panel::new(
-                            LinearLayout::vertical()
-                                .child(TextView::new("Test."))
-                                .child(TextView::new("Test.")),
+                            ListView::new()
+                                //.child(TextView::new("Test."))
+                                //.child(TextView::new("Test.")),
                         )
                         .title("Notifications"),
                     )),
@@ -68,12 +71,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
     siv.add_fullscreen_layer(
         OnEventView::new(layout)
             .on_event(Event::Refresh, move |s| {
-                let frames = animator_config.frames.clone();
-                animator_config.vannah.borrow_mut().handle_animation(
-                    s,
-                    animator_config.ani_ref,
-                    frames,
-                )
+                animate(&animator_config, s)
             })
             .on_pre_event_inner(EventTrigger::arrows(), move |_s, _e| {
                 focus_se(state_manager)
