@@ -1,7 +1,7 @@
 //use crate::logger::curse_log;
 use crate::state::StateManager;
 use crate::state_retr;
-use crate::utils::{button_press_se, focus_se, load_saved_view, view_open};
+use crate::utils::{button_press_se, focus_se, load_saved_view, view_open, logo_ani_frames};
 use crate::vannah::{Vannah, VannahConfig};
 use crate::views::intro::intro::intro_1;
 
@@ -22,7 +22,7 @@ pub fn menu(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
 
     let animator_config = VannahConfig {
         ani_ref: "title_ref",
-        frames: vec![" ######  ##     ## ########   ######  ########\r\n##    ## ##     ## ##     ## ##    ## ##      \r\n##       ##     ## ##     ## ##       ##      \r\n##       ##     ## ########   ######  ######  \r\n##       ##     ## ##   ##         ## ##      \r\n##    ## ##     ## ##    ##  ##    ## ##      \r\n ######   #######  ##     ##  ######  ########", ".######..##.....##.########...######..########\r\n##....##.##.....##.##.....##.##....##.##......\r\n##.......##.....##.##.....##.##.......##......\r\n##.......##.....##.########...######..######..\r\n##.......##.....##.##...##.........##.##......\r\n##....##.##.....##.##....##..##....##.##......\r\n.######...#######..##.....##..######..########"],
+        frames: logo_ani_frames(),
         // Counter has to start at 1 to account for initial TextView frame
         vannah: Rc::new(RefCell::new(Vannah { counter: 1 })),
     };
