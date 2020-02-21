@@ -40,10 +40,10 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
             //     curse_log("add notif");
             // });
             let mut rng = rand::thread_rng();
-            let sender: u8 = rng.gen();
+            let notif_title: u8 = rng.gen();
             state_retr!(state_manager).notifications.push(Notification {
                 text_content: "Test".to_string(),
-                sender: sender.clone().to_string(),
+                title: notif_title.to_string(),
             })
         }))
         .child(Button::new("Quit.", |s| s.quit()));
