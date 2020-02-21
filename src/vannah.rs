@@ -37,9 +37,8 @@ impl Vannah {
 
 pub fn animate(animator_config: &VannahConfig, siv: &mut Cursive) {
     let frames = animator_config.frames.clone();
-    animator_config.vannah.borrow_mut().handle_animation(
-        siv,
-        animator_config.ani_ref,
-        frames,
-    )
+    animator_config
+        .vannah
+        .borrow_mut()
+        .handle_animation(siv, animator_config.ani_ref, frames)
 }

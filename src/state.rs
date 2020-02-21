@@ -1,5 +1,6 @@
 //use crate::logger::curse_log;
 use crate::audio::AudioManager;
+use crate::notifications::notifications::Notification;
 
 use serde::{Deserialize, Serialize};
 use serde_json::to_writer;
@@ -17,6 +18,7 @@ pub struct StateManager {
     pub audio_manager: AudioManager,
     pub current_view: String,
     pub name: String,
+    pub notifications: Vec<Notification>,
 }
 
 impl StateManager {
@@ -25,6 +27,7 @@ impl StateManager {
             audio_manager: AudioManager::new(),
             current_view: "".to_string(),
             name: "".to_string(),
+            notifications: Vec::<Notification>::new(),
         }
     }
 

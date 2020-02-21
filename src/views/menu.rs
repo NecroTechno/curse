@@ -2,7 +2,7 @@
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, load_saved_view, view_open};
-use crate::vannah::{Vannah, VannahConfig, animate};
+use crate::vannah::{animate, Vannah, VannahConfig};
 use crate::views::common::logo_ani_generator;
 use crate::views::intro::intro::intro_1;
 
@@ -57,9 +57,7 @@ pub fn menu(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
                 })
                 .button("Quit", |s| s.quit()),
         )
-        .on_event(Event::Refresh, move |s| {
-            animate(&animator_config, s)
-        })
+        .on_event(Event::Refresh, move |s| animate(&animator_config, s))
         .on_pre_event_inner(EventTrigger::arrows(), move |_s, _e| {
             focus_se(state_manager)
         }),

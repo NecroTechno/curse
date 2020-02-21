@@ -3,10 +3,12 @@ extern crate rodio;
 extern crate serde_json;
 #[macro_use]
 extern crate lazy_static;
+extern crate rand;
 
 mod assets;
 mod audio;
 mod logger;
+mod notifications;
 mod state;
 mod utils;
 mod vannah;

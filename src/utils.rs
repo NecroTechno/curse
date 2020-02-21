@@ -1,9 +1,11 @@
+use crate::logger::curse_log;
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::views;
 
 use cursive::event::EventResult;
 use cursive::theme::{Color, PaletteColor, Theme};
+use cursive::views::{Button, ListView};
 use cursive::Cursive;
 
 use std::sync::Mutex;
@@ -65,7 +67,7 @@ pub fn button_press_se(
 }
 
 pub fn custom_theme_from_cursive(siv: &Cursive) -> Theme {
-    // We'll return the current theme with a small modification.
+    // Return the current theme with a small modification.
     let mut theme = siv.current_theme().clone();
 
     theme.palette[PaletteColor::Background] = Color::TerminalDefault;
