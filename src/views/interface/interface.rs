@@ -1,5 +1,7 @@
 use crate::logger::curse_log;
-use crate::notifications::notifications::{check_for_notifications, Notification};
+use crate::notifications::notifications::{
+    notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,
+};
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, view_open};
@@ -34,17 +36,17 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
             state_retr!(state_manager).save();
         }))
         // temp
-        .child(Button::new("Add notif", move |_s| {
-            // s.call_on_name("notification_view", |view: &mut ListView| {
-            //     view.add_child("Notif.", Button::new("test", |_s| ()));
-            //     curse_log("add notif");
-            // });
+        .child(Button::new("Add notif", move |s| {
             let mut rng = rand::thread_rng();
             let notif_title: u8 = rng.gen();
+            let text_content = notification_content_generator(state_manager);
             state_retr!(state_manager).notifications.push(Notification {
-                text_content: "Test".to_string(),
-                title: notif_title.to_string(),
-            })
+                text_content: text_content,
+                title: format!("Job ID {}", notif_title),
+            });
+            s.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
+                update_notifications(state_manager, view);
+            });
         }))
         .child(Button::new("Quit.", |s| s.quit()));
 
@@ -74,7 +76,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
                     .child(Panel::new(PaddedView::lrtb(1, 1, 1, 1, menu)).title("Menu"))
                     .child(ResizedView::with_full_height(
                         // Notifications panel
-                        Panel::new(ListView::new().with_name("notification_view"))
+                        Panel::new(ListView::new().with_name(NOTIFICATION_VIEW_NAME))
                             .title("Notifications"),
                     )),
             ),
@@ -84,9 +86,6 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
         OnEventView::new(layout)
             .on_event(Event::Refresh, move |s| {
                 animate(&animator_config, s);
-                s.call_on_name("notification_view", |view: &mut ListView| {
-                    check_for_notifications(state_manager, view);
-                });
             })
             .on_pre_event_inner(EventTrigger::arrows(), move |_s, _e| {
                 focus_se(state_manager)
