@@ -1,5 +1,6 @@
 //use crate::logger::curse_log;
 use crate::audio::AudioManager;
+use crate::views::jobs::Job;
 use crate::views::notifications::Notification;
 
 use serde::{Deserialize, Serialize};
@@ -7,6 +8,8 @@ use serde_json::to_writer;
 
 use std::fs::File;
 use std::io::Read;
+
+// TODO: convert saved/current view to enum
 
 #[derive(Serialize, Deserialize)]
 struct SaveState {
@@ -19,6 +22,7 @@ pub struct StateManager {
     pub current_view: String,
     pub name: String,
     pub notifications: Vec<Notification>,
+    pub job: Option<Job>,
 }
 
 impl StateManager {
@@ -28,6 +32,7 @@ impl StateManager {
             current_view: "".to_string(),
             name: "".to_string(),
             notifications: Vec::<Notification>::new(),
+            job: None,
         }
     }
 
@@ -45,6 +50,14 @@ impl StateManager {
             name: self.name.clone(),
         };
         to_writer(&File::create("save_data.json").unwrap(), &save_state).unwrap();
+    }
+
+    pub fn add_job(&mut self, new_job: Job) {
+        self.job = Some(new_job);
+    }
+
+    pub fn has_job(&self) -> bool {
+        self.job.is_some()
     }
 
     pub fn load_save_state(&mut self) -> Option<String> {

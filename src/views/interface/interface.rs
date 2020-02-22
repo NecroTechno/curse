@@ -1,19 +1,20 @@
 use crate::logger::curse_log;
-use crate::views::notifications::{
-    notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,
-};
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, view_open};
 use crate::vannah::{animate, Vannah, VannahConfig};
 use crate::views::common::logo_ani_generator;
 use crate::views::interface::VIEW_CATEGORY;
+use crate::views::jobs::{ENTRY_FIELD_VIEW_NAME, JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME};
+use crate::views::notifications::{
+    notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,
+};
 
 use crate::views::menu::menu;
 
 use cursive::align::HAlign;
 use cursive::event::{Event, EventTrigger};
-use cursive::view::Nameable;
+use cursive::view::{Nameable, View};
 use cursive::views::{
     Button, Canvas, Dialog, EditView, LinearLayout, ListView, OnEventView, PaddedView, Panel,
     ResizedView, ScrollView, TextView,
@@ -40,6 +41,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
             let mut rng = rand::thread_rng();
             let notif_title: u8 = rng.gen();
             let text_content = notification_content_generator(state_manager);
+            // TODO: convert impl?
             state_retr!(state_manager).notifications.push(Notification {
                 text_content: text_content,
                 title: format!("Job ID {}", notif_title),
@@ -59,12 +61,36 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
         1,
         1,
         LinearLayout::horizontal()
-            .child(ResizedView::with_full_screen(
-                Panel::new(canvas).title("Title 1"),
-            ))
             .child(
                 LinearLayout::vertical()
-                    .child(PaddedView::lrtb(2, 2, 1, 2, logo))
+                    .child(
+                        Panel::new(ResizedView::with_min_height(
+                            1,
+                            TextView::empty().with_name(JOB_TITLE_VIEW_NAME),
+                        ))
+                        .title("Job Title")
+                        .title_position(HAlign::Left),
+                    )
+                    .child(ResizedView::with_full_screen(
+                        Panel::new(canvas.with_name(WORKSPACE_VIEW_NAME))
+                            .title("Workspace")
+                            .title_position(HAlign::Left),
+                    ))
+                    .child(
+                        Panel::new(
+                            LinearLayout::horizontal()
+                                .child(ResizedView::with_full_width(
+                                    TextView::empty().with_name(ENTRY_FIELD_VIEW_NAME),
+                                ))
+                                .child(Button::new("Submit", |_s| ())),
+                        )
+                        .title("Entry Field")
+                        .title_position(HAlign::Left),
+                    ),
+            )
+            .child(
+                LinearLayout::vertical()
+                    .child(PaddedView::lrtb(2, 2, 1, 1, logo))
                     .child(PaddedView::lrtb(
                         2,
                         2,
