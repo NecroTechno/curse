@@ -8,14 +8,11 @@ extern crate rand;
 mod assets;
 mod audio;
 mod logger;
-mod notifications;
 mod state;
 mod utils;
 mod vannah;
 mod views;
 
-use crate::views::interface::interface::interface;
-use crate::views::intro::intro::intro_1;
 use logger::curse_log;
 use state::StateManager;
 use views::menu::menu;

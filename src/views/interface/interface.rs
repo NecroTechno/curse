@@ -1,5 +1,5 @@
 use crate::logger::curse_log;
-use crate::notifications::notifications::{
+use crate::views::notifications::{
     notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,
 };
 use crate::state::StateManager;

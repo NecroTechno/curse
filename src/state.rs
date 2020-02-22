@@ -1,6 +1,6 @@
 //use crate::logger::curse_log;
 use crate::audio::AudioManager;
-use crate::notifications::notifications::Notification;
+use crate::views::notifications::Notification;
 
 use serde::{Deserialize, Serialize};
 use serde_json::to_writer;
