@@ -2,7 +2,7 @@ use crate::logger::curse_log;
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se};
-use crate::views::jobs::{Job, JobType};
+use crate::views::jobs::{update_job_view, Job, JobType};
 
 use cursive::event::{EventResult, EventTrigger};
 use cursive::theme::{Color, PaletteColor, Theme};
@@ -10,7 +10,6 @@ use cursive::views::{Button, Dialog, ListView, OnEventView, TextView};
 use cursive::Cursive;
 
 use std::sync::Mutex;
-use std::sync::atomic::AtomicBool;
 
 pub const NOTIFICATION_VIEW_NAME: &str = "notification_view";
 
@@ -63,11 +62,13 @@ fn notification_dialog_builder(
         button_press_se(state_manager);
         if state_retr!(state_manager).has_job() {
             s.add_layer(
-                Dialog::around(TextView::new("You already have a job in progress!"))
-                .button("Ok", move |s| {
-                    button_press_se(state_manager);
-                    s.pop_layer();
-                })
+                Dialog::around(TextView::new("You already have a job in progress!")).button(
+                    "Ok",
+                    move |s| {
+                        button_press_se(state_manager);
+                        s.pop_layer();
+                    },
+                ),
             );
         } else {
             let job_name = state_retr!(state_manager).notifications[notification_index]
@@ -83,6 +84,7 @@ fn notification_dialog_builder(
             s.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
                 update_notifications(state_manager, view);
             });
+            update_job_view(s, state_manager);
             s.pop_layer();
         }
     }

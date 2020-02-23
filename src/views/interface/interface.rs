@@ -12,12 +12,12 @@ use crate::views::notifications::{
 
 use crate::views::menu::menu;
 
-use cursive::align::HAlign;
+use cursive::align::{HAlign, Align};
 use cursive::event::{Event, EventTrigger};
 use cursive::view::{Nameable, View};
 use cursive::views::{
     Button, Canvas, Dialog, EditView, LinearLayout, ListView, OnEventView, PaddedView, Panel,
-    ResizedView, ScrollView, TextView,
+    ResizedView, ScrollView, TextView, SelectView, RadioGroup
 };
 use cursive::Cursive;
 
@@ -53,7 +53,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
         .child(Button::new("Quit.", |s| s.quit()));
 
     let state = String::new();
-    let canvas = Canvas::new(state);
+    let mut workspace = Canvas::new(state);
 
     let layout = PaddedView::lrtb(
         1,
@@ -72,7 +72,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
                         .title_position(HAlign::Left),
                     )
                     .child(ResizedView::with_full_screen(
-                        Panel::new(canvas.with_name(WORKSPACE_VIEW_NAME))
+                        Panel::new(workspace.with_name(WORKSPACE_VIEW_NAME))
                             .title("Workspace")
                             .title_position(HAlign::Left),
                     ))
