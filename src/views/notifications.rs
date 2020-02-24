@@ -54,6 +54,7 @@ fn notification_dialog_builder(
     notification: &Notification,
     notification_index: usize,
 ) {
+    // TODO: make sure on removal of child that the focus is moved to menu
     fn accept_job(
         s: &mut Cursive,
         state_manager: &'static Mutex<StateManager>,

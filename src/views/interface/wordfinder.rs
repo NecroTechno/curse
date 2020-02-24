@@ -1,9 +1,10 @@
-//use crate::logger::curse_log;
+use crate::logger::curse_log;
 
 use cursive::direction::Direction;
 use cursive::theme::ColorStyle;
 use cursive::traits::*;
 use cursive::{Cursive, Printer};
+use cursive::vec::Vec2;
 
 use rand::Rng;
 use rand::seq::SliceRandom;
@@ -20,6 +21,7 @@ pub struct WordFinderView {
     words: Vec<String>,
     cells: Vec<Cell>,
     selected_cell_index: usize,
+    size: Vec2,
 }
 
 fn cell_content_generator() -> String {
@@ -50,8 +52,8 @@ impl WordFinderView {
             }
         }
 
-        if cells.len() < 100 {
-            for _i in 1..100 - cells.len() {
+        if cells.len() < 1000 {
+            for _i in 1..1000 - cells.len() {
                 cells.push(Cell {
                     content: cell_content_generator(),
                 })
@@ -62,6 +64,7 @@ impl WordFinderView {
             words: words,
             cells: cells,
             selected_cell_index: 0,
+            size: Vec2::new(0,0),
         }
     }
 }
@@ -79,7 +82,7 @@ impl View for WordFinderView {
             format!("Find the words: {}", self.words.join(", ")).as_str(),
         );
 
-        let max_size = 50;
+        let max_size = self.size.x - 3;
         let mut row_size = 0;
         let mut row_count = 0;
 
@@ -97,6 +100,10 @@ impl View for WordFinderView {
                 row_count += 1;
             }
         }
+    }
+
+    fn layout(&mut self, size: Vec2) {
+        self.size = size;
     }
 
     fn take_focus(&mut self, _: Direction) -> bool {
