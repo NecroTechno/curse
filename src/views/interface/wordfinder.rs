@@ -79,13 +79,22 @@ impl View for WordFinderView {
             format!("Find the words: {}", self.words.join(", ")).as_str(),
         );
 
+        let max_size = 50;
+        let mut row_size = 0;
+        let mut row_count = 0;
+
         for (i, cell) in self.cells.iter().enumerate() {
             if self.selected_cell_index == i {
                 printer.with_color(style, |printer| {
-                    printer.print((i * 3, 2), &cell.content);
+                    printer.print((row_size, (2 + row_count)), &cell.content);
                 })
             } else {
-                printer.print((i * 3, 2), &cell.content);
+                printer.print((row_size, (2 + row_count)), &cell.content);
+            }
+            row_size += 3;
+            if row_size >= max_size {
+                row_size = 0;
+                row_count += 1;
             }
         }
     }
