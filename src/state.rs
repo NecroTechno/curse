@@ -1,6 +1,6 @@
 //use crate::logger::curse_log;
 use crate::audio::AudioManager;
-use crate::views::jobs::Job;
+use crate::views::interface::jobs::Job;
 use crate::views::notifications::Notification;
 
 use serde::{Deserialize, Serialize};

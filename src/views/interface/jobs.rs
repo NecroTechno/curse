@@ -1,9 +1,11 @@
 use crate::state::StateManager;
 use crate::state_retr;
+use crate::views::interface::wordfinder::WordFinderView;
 
 use cursive::view::View;
-use cursive::views::{TextView, SelectView};
+use cursive::views::{LinearLayout, SelectView, TextView, Panel, ResizedView};
 use cursive::Cursive;
+use cursive::align::{Align, HAlign};
 
 use std::sync::Mutex;
 
@@ -31,9 +33,15 @@ pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateMan
                 .clone(),
         );
     });
-    // siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut SelectView| {
-    //     view.add_item("ae", "ae".to_string());
-    //     view.add_item("ae", "ae".to_string());
-    //     view.add_item("ae", "ae".to_string());
-    // });
+    siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
+        view.remove_child(1);
+        view.insert_child(
+            1,
+            ResizedView::with_full_screen(
+                Panel::new(WordFinderView::new(vec!("example".to_string(), "words".to_string())))
+                    .title("Workspace")
+                    .title_position(HAlign::Left),
+            ),
+        );
+    });
 }

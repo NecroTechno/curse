@@ -4,20 +4,22 @@ use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, view_open};
 use crate::vannah::{animate, Vannah, VannahConfig};
 use crate::views::common::logo_ani_generator;
+use crate::views::interface::jobs::{
+    ENTRY_FIELD_VIEW_NAME, JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME,
+};
 use crate::views::interface::VIEW_CATEGORY;
-use crate::views::jobs::{ENTRY_FIELD_VIEW_NAME, JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME};
 use crate::views::notifications::{
     notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,
 };
 
 use crate::views::menu::menu;
 
-use cursive::align::{HAlign, Align};
+use cursive::align::{Align, HAlign};
 use cursive::event::{Event, EventTrigger};
 use cursive::view::{Nameable, View};
 use cursive::views::{
-    Button, Canvas, Dialog, EditView, LinearLayout, ListView, OnEventView, PaddedView, Panel,
-    ResizedView, ScrollView, TextView, SelectView, RadioGroup
+    Button, Canvas, Dialog, DummyView, EditView, LinearLayout, ListView, OnEventView, PaddedView,
+    Panel, ResizedView, ScrollView, SelectView, TextView,
 };
 use cursive::Cursive;
 
@@ -52,9 +54,6 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
         }))
         .child(Button::new("Quit.", |s| s.quit()));
 
-    let state = String::new();
-    let mut workspace = Canvas::new(state);
-
     let layout = PaddedView::lrtb(
         1,
         1,
@@ -72,7 +71,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
                         .title_position(HAlign::Left),
                     )
                     .child(ResizedView::with_full_screen(
-                        Panel::new(workspace.with_name(WORKSPACE_VIEW_NAME))
+                        Panel::new(DummyView)
                             .title("Workspace")
                             .title_position(HAlign::Left),
                     ))
@@ -86,7 +85,8 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
                         )
                         .title("Entry Field")
                         .title_position(HAlign::Left),
-                    ),
+                    )
+                    .with_name(WORKSPACE_VIEW_NAME),
             )
             .child(
                 LinearLayout::vertical()
