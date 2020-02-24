@@ -26,7 +26,7 @@ pub fn update_notifications(
         notifications_view.clear();
         for (i, notification) in state_retr!(state_manager).notifications.iter().enumerate() {
             notifications_view.add_child(
-                notification.title.as_str(),
+                &notification.title,
                 Button::new("Open", move |s| {
                     let mut notification_index: usize = 0;
                     s.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
@@ -90,8 +90,8 @@ fn notification_dialog_builder(
         }
     }
 
-    let popup = Dialog::around(TextView::new(notification.text_content.as_str()))
-        .title(notification.title.as_str())
+    let popup = Dialog::around(TextView::new(&notification.text_content))
+        .title(&notification.title)
         .button("Accept Job", move |s| {
             accept_job(s, state_manager, notification_index)
         })

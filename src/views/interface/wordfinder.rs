@@ -79,7 +79,7 @@ impl View for WordFinderView {
 
         printer.print(
             (0, 0),
-            format!("Find the words: {}", self.words.join(", ")).as_str(),
+            &format!("Find the words: {}", self.words.join(", ")),
         );
 
         let max_size = self.size.x - 3;
