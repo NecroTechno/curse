@@ -9,10 +9,11 @@ use cursive::vec::Vec2;
 use rand::Rng;
 use rand::seq::SliceRandom;
 use std::cmp;
+use std::iter::FromIterator;
 
 const AVAILABLE_CHARACTERS: &[u8] = "abcdefghijklmnopqrstuvwxyz1234567890!$%&*_+=-".as_bytes();
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Cell {
     content: String,
 }
@@ -22,6 +23,7 @@ pub struct WordFinderView {
     cells: Vec<Cell>,
     selected_cell_index: usize,
     size: Vec2,
+    cells_sorted: bool,
 }
 
 fn cell_content_generator() -> String {
@@ -52,8 +54,8 @@ impl WordFinderView {
             }
         }
 
-        if cells.len() < 1000 {
-            for _i in 1..1000 - cells.len() {
+        if cells.len() < 10000 {
+            for _i in 1..10000 - cells.len() {
                 cells.push(Cell {
                     content: cell_content_generator(),
                 })
@@ -65,6 +67,7 @@ impl WordFinderView {
             cells: cells,
             selected_cell_index: 0,
             size: Vec2::new(0,0),
+            cells_sorted: false,
         }
     }
 }
@@ -104,6 +107,15 @@ impl View for WordFinderView {
 
     fn layout(&mut self, size: Vec2) {
         self.size = size;
+
+        curse_log(&format!("{}", size.y));
+
+        if !self.cells_sorted {
+            let max_cells = (size.x - 3) * (size.y - 2);
+            curse_log(&format!("{}", max_cells));
+            self.cells.drain(max_cells..self.cells.len());
+            self.cells_sorted = true;
+        }
     }
 
     fn take_focus(&mut self, _: Direction) -> bool {
