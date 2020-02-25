@@ -12,13 +12,6 @@ use rand::seq::SliceRandom;
 const AVAILABLE_CHARACTERS: &[u8] = "abcdefghijklmnopqrstuvwxyz1234567890!$%&*_+=-".as_bytes();
 const CHARACTER_CELL_LENGTH: usize = 3;
 
-enum FinderDirection {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
 #[derive(Debug, Clone)]
 struct Cell {
     content: String,
