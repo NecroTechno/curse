@@ -60,6 +60,10 @@ impl StateManager {
         self.job.is_some()
     }
 
+    pub fn remove_job(&mut self) {
+        self.job = None;
+    }
+
     pub fn load_save_state(&mut self) -> Option<String> {
         let save_file = File::open("save_data.json");
         match save_file {

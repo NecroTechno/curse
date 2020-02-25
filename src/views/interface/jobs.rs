@@ -6,7 +6,7 @@ use crate::views::interface::malwarehunter::MalwareHunterView;
 
 use cursive::align::HAlign;
 
-use cursive::views::{LinearLayout, Panel, ResizedView, TextView};
+use cursive::views::{DummyView, LinearLayout, Panel, ResizedView, TextView};
 use cursive::Cursive;
 
 use std::sync::Mutex;
@@ -23,32 +23,50 @@ pub struct Job {
     pub job_type: JobType,
 }
 
-//pub fn complete_job(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
-fn complete_job() {
-    curse_log("Complete job");
+pub fn complete_job(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
+    state_retr!(state_manager).remove_job();
+    update_job_view(siv, state_manager);
 }
 
 pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
-    siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
-        view.set_content(
-            state_retr!(state_manager)
-                .job
-                .as_ref()
-                .unwrap()
-                .name
-                .clone(),
-        );
-    });
-    let word_finder_job = MalwareHunterView::new(2, move |siv| complete_job());
-    siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
-        view.remove_child(1);
-        view.insert_child(
-            1,
-            ResizedView::with_full_screen(
-                Panel::new(word_finder_job)
-                    .title("Workspace")
-                    .title_position(HAlign::Left),
-            ),
-        );
-    });
+    if state_retr!(state_manager).has_job() {
+        siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
+            view.set_content(
+                state_retr!(state_manager)
+                    .job
+                    .as_ref()
+                    .unwrap()
+                    .name
+                    .clone(),
+            );
+        });
+        let word_finder_job =
+            MalwareHunterView::new(2, move |siv| complete_job(siv, state_manager));
+        siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
+            view.remove_child(1);
+            view.insert_child(
+                1,
+                ResizedView::with_full_screen(
+                    Panel::new(word_finder_job)
+                        .title("Workspace")
+                        .title_position(HAlign::Left),
+                ),
+            );
+        });
+    } else {
+        siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
+            view.set_content("");
+        });
+        siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
+            view.remove_child(1);
+            view.insert_child(
+                1,
+                ResizedView::with_full_screen(
+                    Panel::new(DummyView)
+                        .title("Workspace")
+                        .title_position(HAlign::Left),
+                ),
+            );
+        });
+    }
 }
