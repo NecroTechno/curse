@@ -1,11 +1,10 @@
-use crate::logger::curse_log;
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::views;
 
 use cursive::event::EventResult;
 use cursive::theme::{Color, PaletteColor, Theme};
-use cursive::views::{Button, ListView};
+
 use cursive::Cursive;
 
 use std::sync::Mutex;

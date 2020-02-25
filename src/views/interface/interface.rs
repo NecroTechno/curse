@@ -1,8 +1,7 @@
-use crate::logger::curse_log;
 use crate::state::StateManager;
 use crate::state_retr;
-use crate::utils::{button_press_se, focus_se, view_open};
-use crate::vannah::{animate, Vannah, VannahConfig};
+use crate::utils::{focus_se, view_open};
+use crate::vannah::animate;
 use crate::views::common::logo_ani_generator;
 use crate::views::interface::jobs::{
     ENTRY_FIELD_VIEW_NAME, JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME,
@@ -12,9 +11,7 @@ use crate::views::notifications::{
     notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,
 };
 
-use crate::views::menu::menu;
-
-use cursive::align::{Align, HAlign};
+use cursive::align::HAlign;
 use cursive::event::{Event, EventTrigger};
 use cursive::view::{Nameable, View};
 use cursive::views::{
@@ -25,8 +22,6 @@ use cursive::Cursive;
 
 use rand::Rng;
 
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::Mutex;
 
 pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {

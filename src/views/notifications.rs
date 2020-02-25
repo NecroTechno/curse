@@ -1,11 +1,10 @@
-use crate::logger::curse_log;
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se};
 use crate::views::interface::jobs::{update_job_view, Job, JobType};
 
-use cursive::event::{EventResult, EventTrigger};
-use cursive::theme::{Color, PaletteColor, Theme};
+use cursive::event::EventTrigger;
+
 use cursive::views::{Button, Dialog, ListView, OnEventView, TextView};
 use cursive::Cursive;
 

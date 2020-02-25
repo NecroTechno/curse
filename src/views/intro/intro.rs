@@ -5,7 +5,6 @@ use crate::utils::{button_press_se, focus_se, view_open};
 use crate::views::intro::VIEW_CATEGORY;
 
 use crate::views::interface::interface::interface;
-use crate::views::menu::menu;
 
 use cursive::event::EventTrigger;
 use cursive::view::Nameable;

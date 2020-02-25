@@ -3,13 +3,10 @@ use crate::logger::curse_log;
 use cursive::direction::Direction;
 use cursive::theme::ColorStyle;
 use cursive::traits::*;
-use cursive::{Cursive, Printer};
 use cursive::vec::Vec2;
+use cursive::Printer;
 
-use rand::Rng;
 use rand::seq::SliceRandom;
-use std::cmp;
-use std::iter::FromIterator;
 
 const AVAILABLE_CHARACTERS: &[u8] = "abcdefghijklmnopqrstuvwxyz1234567890!$%&*_+=-".as_bytes();
 
@@ -28,7 +25,13 @@ pub struct WordFinderView {
 
 fn cell_content_generator() -> String {
     let mut rng = &mut rand::thread_rng();
-    String::from_utf8(AVAILABLE_CHARACTERS.choose_multiple(&mut rng, 2).cloned().collect()).unwrap()
+    String::from_utf8(
+        AVAILABLE_CHARACTERS
+            .choose_multiple(&mut rng, 2)
+            .cloned()
+            .collect(),
+    )
+    .unwrap()
 }
 
 impl WordFinderView {
@@ -66,7 +69,7 @@ impl WordFinderView {
             words: words,
             cells: cells,
             selected_cell_index: 0,
-            size: Vec2::new(0,0),
+            size: Vec2::new(0, 0),
             cells_sorted: false,
         }
     }

@@ -2,7 +2,7 @@
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, load_saved_view, view_open};
-use crate::vannah::{animate, Vannah, VannahConfig};
+use crate::vannah::animate;
 use crate::views::common::logo_ani_generator;
 use crate::views::intro::intro::intro_1;
 
@@ -12,8 +12,6 @@ use cursive::view::Nameable;
 use cursive::views::{Dialog, LinearLayout, OnEventView, SliderView, TextView};
 use cursive::Cursive;
 
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::Mutex;
 
 const VIEW_CATEGORY: &str = "menu";

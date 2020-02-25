@@ -2,9 +2,9 @@ use crate::state::StateManager;
 use crate::state_retr;
 use crate::views::interface::wordfinder::WordFinderView;
 
-use cursive::align::{Align, HAlign};
-use cursive::view::View;
-use cursive::views::{LinearLayout, Panel, ResizedView, SelectView, TextView};
+use cursive::align::HAlign;
+
+use cursive::views::{LinearLayout, Panel, ResizedView, TextView};
 use cursive::Cursive;
 
 use std::sync::Mutex;
