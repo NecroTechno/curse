@@ -1,11 +1,11 @@
 use crate::logger::curse_log;
 
 use cursive::direction::Direction;
+use cursive::event::{Event, EventResult, Key};
 use cursive::theme::ColorStyle;
 use cursive::traits::*;
 use cursive::vec::Vec2;
 use cursive::Printer;
-use cursive::event::{Event, EventResult, Key};
 
 use rand::seq::SliceRandom;
 
@@ -16,7 +16,7 @@ enum FinderDirection {
     Up,
     Down,
     Left,
-    Right
+    Right,
 }
 
 #[derive(Debug, Clone)]
@@ -36,7 +36,7 @@ fn cell_content_generator() -> String {
     let mut rng = &mut rand::thread_rng();
     String::from_utf8(
         AVAILABLE_CHARACTERS
-            .choose_multiple(&mut rng, 2)
+            .choose_multiple(&mut rng, CHARACTER_CELL_LENGTH - 1)
             .cloned()
             .collect(),
     )
@@ -52,7 +52,7 @@ impl WordFinderView {
 
             while pos < word.len() {
                 let mut len = 0;
-                for ch in iter.by_ref().take(2) {
+                for ch in iter.by_ref().take(CHARACTER_CELL_LENGTH - 1) {
                     len += ch.len_utf8();
                 }
                 let mut chunk = word[pos..pos + len].to_string();
@@ -83,33 +83,48 @@ impl WordFinderView {
         }
     }
 
-    fn update_focus(&mut self, direction: FinderDirection) {
-        match direction {
-            FinderDirection::Right => {
-                if self.selected_cell_index + 1 < self.cells.len() {
-                    self.selected_cell_index += 1
-                }
+    fn update_focus(&mut self, move_index: i32) {
+        // match direction {
+        //     FinderDirection::Right => {
+        //         if self.selected_cell_index + 1 < self.cells.len() {
+        //             self.selected_cell_index += 1
+        //         }
+        //     }
+        //     FinderDirection::Left => {
+        //         if self.selected_cell_index > 0 {
+        //             self.selected_cell_index -= 1
+        //         }
+        //     }
+        //     FinderDirection::Down => {
+        //         let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
+        //         if (self.selected_cell_index + (cells_to_move.floor() as usize)) < self.cells.len()
+        //         {
+        //             self.selected_cell_index += cells_to_move.floor() as usize;
+        //         } else {
+        //             self.selected_cell_index = self.cells.len() - 1;
+        //         }
+        //     }
+        //     FinderDirection::Up => {
+        //         let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
+        //         if (self.selected_cell_index) as i32 - (cells_to_move.floor() as usize) as i32 >= 0
+        //         {
+        //             self.selected_cell_index -= cells_to_move.floor() as usize;
+        //         } else {
+        //             self.selected_cell_index = 0;
+        //         }
+        //     }
+        // }
+        if move_index.is_negative() {
+            if self.selected_cell_index as i32 - (move_index * -1) >= 0 {
+                self.selected_cell_index -= (move_index * -1) as usize
+            } else {
+                self.selected_cell_index = 0;
             }
-            FinderDirection::Left => {
-                if self.selected_cell_index > 0 {
-                    self.selected_cell_index -= 1
-                }
-            }
-            FinderDirection::Down  => {
-                let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
-                if (self.selected_cell_index + (cells_to_move.floor() as usize)) < self.cells.len() {
-                    self.selected_cell_index += cells_to_move.floor() as usize;
-                } else {
-                    self.selected_cell_index = self.cells.len() - 1;
-                }
-            }
-            FinderDirection::Up  => {
-                let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
-                if (self.selected_cell_index) as i32 - (cells_to_move.floor() as usize) as i32 >= 0 {
-                    self.selected_cell_index -= cells_to_move.floor() as usize;
-                } else {
-                    self.selected_cell_index = 0;
-                }
+        } else {
+            if self.selected_cell_index as i32 + move_index > self.cells.len() as i32 - 1 {
+                self.selected_cell_index = self.cells.len() - 1;
+            } else {
+                self.selected_cell_index += move_index as usize
             }
         }
     }
@@ -148,15 +163,28 @@ impl View for WordFinderView {
         }
     }
 
-    fn on_event (&mut self, event: Event) -> EventResult {
+    fn on_event(&mut self, event: Event) -> EventResult {
+        let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
         match event {
-            Event::Key(Key::Right) => { self.update_focus(FinderDirection::Right) }
-            Event::Key(Key::Left) => { self.update_focus(FinderDirection::Left) }
-            Event::Key(Key::Down) => { self.update_focus(FinderDirection::Down) }
-            Event::Key(Key::Up) => { self.update_focus(FinderDirection::Up) }
-            Event::Key(Key::Home) => { self.selected_cell_index = 0 }
-            Event::Key(Key::End) => { self.selected_cell_index = self.cells.len() - 1 }
-            _ => return EventResult::Ignored
+            Event::Key(Key::Right) if self.selected_cell_index + 1 < self.cells.len() => {
+                self.update_focus(1)
+            }
+            Event::Key(Key::Left) if self.selected_cell_index > 0 => self.update_focus(-1),
+            Event::Key(Key::Down)
+                if (self.selected_cell_index + (cells_to_move.floor() as usize))
+                    < self.cells.len() =>
+            {
+                self.update_focus(cells_to_move as i32)
+            }
+            Event::Key(Key::Up)
+                if (self.selected_cell_index) as i32 - (cells_to_move.floor() as usize) as i32
+                    >= 0 =>
+            {
+                self.update_focus(-(cells_to_move as i32))
+            }
+            Event::Key(Key::Home) => self.selected_cell_index = 0,
+            Event::Key(Key::End) => self.selected_cell_index = self.cells.len() - 1,
+            _ => return EventResult::Ignored,
         }
 
         EventResult::Consumed(None)
@@ -166,9 +194,11 @@ impl View for WordFinderView {
         self.size = size;
 
         if !self.cells_sorted {
-            let max_cells = ((size.x - CHARACTER_CELL_LENGTH) / CHARACTER_CELL_LENGTH) as f32 * (size.y - 2) as f32;
+            let max_cells = ((size.x - CHARACTER_CELL_LENGTH) / CHARACTER_CELL_LENGTH) as f32
+                * (size.y - 2) as f32;
             curse_log(&format!("{}", max_cells));
-            self.cells.drain(max_cells.floor() as usize..self.cells.len());
+            self.cells
+                .drain(max_cells.floor() as usize..self.cells.len());
             let mut rng = rand::thread_rng();
             self.cells.shuffle(&mut rng);
 
