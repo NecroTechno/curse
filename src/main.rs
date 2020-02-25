@@ -41,7 +41,7 @@ fn main() {
 
     let screen_size = siv.screen_size();
 
-    if screen_size.x < 120 || screen_size.y < 30 {
+    if screen_size.x < 110 || screen_size.y < 30 {
         resize(&mut siv, &STATE_MANAGER)
     } else {
         // Run other views here to test immediately

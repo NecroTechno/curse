@@ -5,3 +5,4 @@ Cargo.lock
 **/*.rs.bk
 
 save_data.json
+error.log

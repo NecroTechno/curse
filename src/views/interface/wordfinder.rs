@@ -5,10 +5,19 @@ use cursive::theme::ColorStyle;
 use cursive::traits::*;
 use cursive::vec::Vec2;
 use cursive::Printer;
+use cursive::event::{Event, EventResult, Key};
 
 use rand::seq::SliceRandom;
 
 const AVAILABLE_CHARACTERS: &[u8] = "abcdefghijklmnopqrstuvwxyz1234567890!$%&*_+=-".as_bytes();
+const CHARACTER_CELL_LENGTH: usize = 3;
+
+enum FinderDirection {
+    Up,
+    Down,
+    Left,
+    Right
+}
 
 #[derive(Debug, Clone)]
 struct Cell {
@@ -73,6 +82,37 @@ impl WordFinderView {
             cells_sorted: false,
         }
     }
+
+    fn update_focus(&mut self, direction: FinderDirection) {
+        match direction {
+            FinderDirection::Right => {
+                if self.selected_cell_index + 1 < self.cells.len() {
+                    self.selected_cell_index += 1
+                }
+            }
+            FinderDirection::Left => {
+                if self.selected_cell_index > 0 {
+                    self.selected_cell_index -= 1
+                }
+            }
+            FinderDirection::Down  => {
+                let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
+                if (self.selected_cell_index + (cells_to_move.floor() as usize)) < self.cells.len() {
+                    self.selected_cell_index += cells_to_move.floor() as usize;
+                } else {
+                    self.selected_cell_index = self.cells.len() - 1;
+                }
+            }
+            FinderDirection::Up  => {
+                let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
+                if (self.selected_cell_index) as i32 - (cells_to_move.floor() as usize) as i32 >= 0 {
+                    self.selected_cell_index -= cells_to_move.floor() as usize;
+                } else {
+                    self.selected_cell_index = 0;
+                }
+            }
+        }
+    }
 }
 
 impl View for WordFinderView {
@@ -88,7 +128,7 @@ impl View for WordFinderView {
             &format!("Find the words: {}", self.words.join(", ")),
         );
 
-        let max_size = self.size.x - 3;
+        let max_size = self.size.x - CHARACTER_CELL_LENGTH;
         let mut row_size = 0;
         let mut row_count = 0;
 
@@ -100,7 +140,7 @@ impl View for WordFinderView {
             } else {
                 printer.print((row_size, (2 + row_count)), &cell.content);
             }
-            row_size += 3;
+            row_size += CHARACTER_CELL_LENGTH;
             if row_size >= max_size {
                 row_size = 0;
                 row_count += 1;
@@ -108,15 +148,30 @@ impl View for WordFinderView {
         }
     }
 
+    fn on_event (&mut self, event: Event) -> EventResult {
+        match event {
+            Event::Key(Key::Right) => { self.update_focus(FinderDirection::Right) }
+            Event::Key(Key::Left) => { self.update_focus(FinderDirection::Left) }
+            Event::Key(Key::Down) => { self.update_focus(FinderDirection::Down) }
+            Event::Key(Key::Up) => { self.update_focus(FinderDirection::Up) }
+            Event::Key(Key::Home) => { self.selected_cell_index = 0 }
+            Event::Key(Key::End) => { self.selected_cell_index = self.cells.len() - 1 }
+            _ => return EventResult::Ignored
+        }
+
+        EventResult::Consumed(None)
+    }
+
     fn layout(&mut self, size: Vec2) {
         self.size = size;
 
-        curse_log(&format!("{}", size.y));
-
         if !self.cells_sorted {
-            let max_cells = (size.x - 3) * (size.y - 2);
+            let max_cells = ((size.x - CHARACTER_CELL_LENGTH) / CHARACTER_CELL_LENGTH) as f32 * (size.y - 2) as f32;
             curse_log(&format!("{}", max_cells));
-            self.cells.drain(max_cells..self.cells.len());
+            self.cells.drain(max_cells.floor() as usize..self.cells.len());
+            let mut rng = rand::thread_rng();
+            self.cells.shuffle(&mut rng);
+
             self.cells_sorted = true;
         }
     }
