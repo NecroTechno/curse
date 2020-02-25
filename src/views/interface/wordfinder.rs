@@ -11,6 +11,7 @@ use rand::seq::SliceRandom;
 
 const AVAILABLE_CHARACTERS: &[u8] = "abcdefghijklmnopqrstuvwxyz1234567890!$%&*_+=-".as_bytes();
 const CHARACTER_CELL_LENGTH: usize = 3;
+const OCCUPIED_WORKSPACE_HEIGHT: usize = 4;
 
 #[derive(Debug, Clone)]
 struct Cell {
@@ -77,36 +78,6 @@ impl WordFinderView {
     }
 
     fn update_focus(&mut self, move_index: i32) {
-        // match direction {
-        //     FinderDirection::Right => {
-        //         if self.selected_cell_index + 1 < self.cells.len() {
-        //             self.selected_cell_index += 1
-        //         }
-        //     }
-        //     FinderDirection::Left => {
-        //         if self.selected_cell_index > 0 {
-        //             self.selected_cell_index -= 1
-        //         }
-        //     }
-        //     FinderDirection::Down => {
-        //         let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
-        //         if (self.selected_cell_index + (cells_to_move.floor() as usize)) < self.cells.len()
-        //         {
-        //             self.selected_cell_index += cells_to_move.floor() as usize;
-        //         } else {
-        //             self.selected_cell_index = self.cells.len() - 1;
-        //         }
-        //     }
-        //     FinderDirection::Up => {
-        //         let cells_to_move: f32 = ((self.size.x - 1) / CHARACTER_CELL_LENGTH) as f32;
-        //         if (self.selected_cell_index) as i32 - (cells_to_move.floor() as usize) as i32 >= 0
-        //         {
-        //             self.selected_cell_index -= cells_to_move.floor() as usize;
-        //         } else {
-        //             self.selected_cell_index = 0;
-        //         }
-        //     }
-        // }
         if move_index.is_negative() {
             if self.selected_cell_index as i32 - (move_index * -1) >= 0 {
                 self.selected_cell_index -= (move_index * -1) as usize
@@ -136,6 +107,11 @@ impl View for WordFinderView {
             &format!("Find the words: {}", self.words.join(", ")),
         );
 
+        printer.print(
+            (0, 2),
+            "Current entry: ",
+        );
+
         let max_size = self.size.x - CHARACTER_CELL_LENGTH;
         let mut row_size = 0;
         let mut row_count = 0;
@@ -143,10 +119,10 @@ impl View for WordFinderView {
         for (i, cell) in self.cells.iter().enumerate() {
             if self.selected_cell_index == i {
                 printer.with_color(style, |printer| {
-                    printer.print((row_size, (2 + row_count)), &cell.content);
+                    printer.print((row_size, (OCCUPIED_WORKSPACE_HEIGHT + row_count)), &cell.content);
                 })
             } else {
-                printer.print((row_size, (2 + row_count)), &cell.content);
+                printer.print((row_size, (OCCUPIED_WORKSPACE_HEIGHT + row_count)), &cell.content);
             }
             row_size += CHARACTER_CELL_LENGTH;
             if row_size >= max_size {
@@ -188,7 +164,7 @@ impl View for WordFinderView {
 
         if !self.cells_sorted {
             let max_cells = ((size.x - CHARACTER_CELL_LENGTH) / CHARACTER_CELL_LENGTH) as f32
-                * (size.y - 2) as f32;
+                * (size.y - OCCUPIED_WORKSPACE_HEIGHT) as f32;
             curse_log(&format!("{}", max_cells));
             self.cells
                 .drain(max_cells.floor() as usize..self.cells.len());

@@ -70,17 +70,6 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
                             .title("Workspace")
                             .title_position(HAlign::Left),
                     ))
-                    .child(
-                        Panel::new(
-                            LinearLayout::horizontal()
-                                .child(ResizedView::with_full_width(
-                                    TextView::empty().with_name(ENTRY_FIELD_VIEW_NAME),
-                                ))
-                                .child(Button::new("Submit", |_s| ())),
-                        )
-                        .title("Entry Field")
-                        .title_position(HAlign::Left),
-                    )
                     .with_name(WORKSPACE_VIEW_NAME),
             )
             .child(
