@@ -76,7 +76,7 @@ fn notification_dialog_builder(
                 .clone();
             &state_retr!(state_manager).add_job(Job {
                 name: job_name,
-                job_type: JobType::WordFinder,
+                job_type: JobType::MalwareHunter,
             });
             &state_retr!(state_manager)
                 .notifications

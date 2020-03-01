@@ -2,7 +2,7 @@ use crate::logger::curse_log;
 
 use crate::state::StateManager;
 use crate::state_retr;
-use crate::views::interface::wordfinder::WordFinderView;
+use crate::views::interface::malwarehunter::MalwareHunterView;
 
 use cursive::align::HAlign;
 
@@ -15,7 +15,7 @@ pub const JOB_TITLE_VIEW_NAME: &str = "job_title_view";
 pub const WORKSPACE_VIEW_NAME: &str = "workspace_view";
 
 pub enum JobType {
-    WordFinder,
+    MalwareHunter,
 }
 
 pub struct Job {
@@ -39,7 +39,7 @@ pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateMan
                 .clone(),
         );
     });
-    let word_finder_job = WordFinderView::new(2, move |siv| complete_job());
+    let word_finder_job = MalwareHunterView::new(2, move |siv| complete_job());
     siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
         view.remove_child(1);
         view.insert_child(
