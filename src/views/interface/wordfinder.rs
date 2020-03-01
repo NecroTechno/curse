@@ -11,7 +11,34 @@ use rand::seq::SliceRandom;
 
 const AVAILABLE_CHARACTERS: &[u8] = "abcdefghijklmnopqrstuvwxyz1234567890!$%&*_+=-".as_bytes();
 const CHARACTER_CELL_LENGTH: usize = 3;
-const OCCUPIED_WORKSPACE_HEIGHT: usize = 4;
+const OCCUPIED_WORKSPACE_HEIGHT: usize = 2;
+const MAX_CELL_VEC_LENGTH: usize = 200;
+const WORD_LIST: &'static [&'static str] = &[
+    "defrag",
+    "reboot",
+    "cypher",
+    "dotcom",
+    "netizen_",
+    "phreak",
+    "publify_",
+    "palmtop_",
+    "digerati",
+    "dox_",
+    "daemon",
+    "epsilon_",
+    "hack",
+    "adware",
+    "buffer",
+    "exploit_",
+    "payload_",
+    "rootkit_",
+    "trojan",
+    "worm",
+    "botnet",
+    "ransom",
+    "repo",
+    "vulnerable",
+];
 
 #[derive(Debug, Clone)]
 struct Cell {
@@ -20,6 +47,7 @@ struct Cell {
 
 pub struct WordFinderView {
     words: Vec<String>,
+    current_word: String,
     cells: Vec<Cell>,
     selected_cell_index: usize,
     size: Vec2,
@@ -37,9 +65,21 @@ fn cell_content_generator() -> String {
     .unwrap()
 }
 
+fn words_generator(difficulty: u8) -> Vec<String> {
+    let rng = &mut rand::thread_rng();
+    let mut words = Vec::new();
+    for _i in 0..difficulty {
+        words.push(WORD_LIST.choose(rng).unwrap().to_string());
+    }
+    words
+}
+
 impl WordFinderView {
-    pub fn new(words: Vec<String>) -> Self {
+    pub fn new(difficulty: u8) -> Self {
         let mut cells = Vec::new();
+
+        let words = words_generator(difficulty);
+
         for word in words.iter() {
             let mut iter = word.chars();
             let mut pos = 0;
@@ -60,8 +100,8 @@ impl WordFinderView {
             }
         }
 
-        if cells.len() < 10000 {
-            for _i in 1..10000 - cells.len() {
+        if cells.len() < MAX_CELL_VEC_LENGTH {
+            for _i in 1..MAX_CELL_VEC_LENGTH - cells.len() {
                 cells.push(Cell {
                     content: cell_content_generator(),
                 })
@@ -70,6 +110,7 @@ impl WordFinderView {
 
         WordFinderView {
             words: words,
+            current_word: String::new(),
             cells: cells,
             selected_cell_index: 0,
             size: Vec2::new(0, 0),
@@ -92,6 +133,22 @@ impl WordFinderView {
             }
         }
     }
+
+    fn slice_to_current_word(&mut self) {
+        self.current_word
+            .push_str(&self.cells[self.selected_cell_index].content);
+    }
+
+    fn submit_word(&mut self) {
+        let submission = self.words.iter().position(|x| x == &self.current_word);
+        match submission {
+            Some(i) => {
+                self.words.remove(i);
+                self.current_word = String::new();
+            }
+            None => (),
+        };
+    }
 }
 
 impl View for WordFinderView {
@@ -102,15 +159,18 @@ impl View for WordFinderView {
             ColorStyle::primary()
         };
 
+        // TODO: highlight current entry and available words if current word is found?
+
         printer.print(
             (0, 0),
             &format!("Find the words: {}", self.words.join(", ")),
         );
 
-        printer.print(
-            (0, 2),
-            "Current entry: ",
-        );
+        printer.print_box((0, self.size.y - 3), (self.size.x, 3), false);
+
+        printer.print((1, self.size.y - 3), "┤ Current Entry ├");
+
+        printer.print((1, self.size.y - 2), &format!("{}", &self.current_word));
 
         let max_size = self.size.x - CHARACTER_CELL_LENGTH;
         let mut row_size = 0;
@@ -119,10 +179,16 @@ impl View for WordFinderView {
         for (i, cell) in self.cells.iter().enumerate() {
             if self.selected_cell_index == i {
                 printer.with_color(style, |printer| {
-                    printer.print((row_size, (OCCUPIED_WORKSPACE_HEIGHT + row_count)), &cell.content);
+                    printer.print(
+                        (row_size, (OCCUPIED_WORKSPACE_HEIGHT + row_count)),
+                        &cell.content,
+                    );
                 })
             } else {
-                printer.print((row_size, (OCCUPIED_WORKSPACE_HEIGHT + row_count)), &cell.content);
+                printer.print(
+                    (row_size, (OCCUPIED_WORKSPACE_HEIGHT + row_count)),
+                    &cell.content,
+                );
             }
             row_size += CHARACTER_CELL_LENGTH;
             if row_size >= max_size {
@@ -153,6 +219,9 @@ impl View for WordFinderView {
             }
             Event::Key(Key::Home) => self.selected_cell_index = 0,
             Event::Key(Key::End) => self.selected_cell_index = self.cells.len() - 1,
+            Event::Key(Key::Enter) => self.slice_to_current_word(),
+            Event::Key(Key::Tab) => self.submit_word(),
+            Event::Key(Key::Del) => self.current_word = String::new(),
             _ => return EventResult::Ignored,
         }
 
@@ -163,11 +232,11 @@ impl View for WordFinderView {
         self.size = size;
 
         if !self.cells_sorted {
-            let max_cells = ((size.x - CHARACTER_CELL_LENGTH) / CHARACTER_CELL_LENGTH) as f32
-                * (size.y - OCCUPIED_WORKSPACE_HEIGHT) as f32;
-            curse_log(&format!("{}", max_cells));
-            self.cells
-                .drain(max_cells.floor() as usize..self.cells.len());
+            // for trimming cell if too many generated
+            // let max_cells = ((size.x - CHARACTER_CELL_LENGTH) / CHARACTER_CELL_LENGTH) as f32
+            //     * (size.y - OCCUPIED_WORKSPACE_HEIGHT) as f32;
+            // self.cells
+            //     .drain(max_cells.floor() as usize..self.cells.len());
             let mut rng = rand::thread_rng();
             self.cells.shuffle(&mut rng);
 

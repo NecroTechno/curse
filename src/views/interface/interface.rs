@@ -3,9 +3,7 @@ use crate::state_retr;
 use crate::utils::{focus_se, view_open};
 use crate::vannah::animate;
 use crate::views::common::logo_ani_generator;
-use crate::views::interface::jobs::{
-    ENTRY_FIELD_VIEW_NAME, JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME,
-};
+use crate::views::interface::jobs::{JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME};
 use crate::views::interface::VIEW_CATEGORY;
 use crate::views::notifications::{
     notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,

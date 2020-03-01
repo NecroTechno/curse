@@ -37,12 +37,9 @@ pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateMan
         view.insert_child(
             1,
             ResizedView::with_full_screen(
-                Panel::new(WordFinderView::new(vec![
-                    "example".to_string(),
-                    "words".to_string(),
-                ]))
-                .title("Workspace")
-                .title_position(HAlign::Left),
+                Panel::new(WordFinderView::new(2))
+                    .title("Workspace")
+                    .title_position(HAlign::Left),
             ),
         );
     });
