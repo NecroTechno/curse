@@ -1,7 +1,7 @@
 use crate::logger::curse_log;
 
 use cursive::direction::Direction;
-use cursive::event::{Event, EventResult, Key, Callback};
+use cursive::event::{Event, EventResult, Key, Callback, MouseEvent, MouseButton};
 use cursive::theme::ColorStyle;
 use cursive::traits::*;
 use cursive::vec::Vec2;
@@ -140,6 +140,15 @@ impl WordFinderView {
         }
     }
 
+    fn handle_click(&mut self, click_pos: Vec2, offset: Vec2) {
+        let available_click_pos = Vec2::new(click_pos.x - offset.x, click_pos.y - offset.y);
+        let row_size = self.size.x / CHARACTER_CELL_LENGTH;
+        let possible_cell = (available_click_pos.x / CHARACTER_CELL_LENGTH) + ((available_click_pos.y - OCCUPIED_WORKSPACE_HEIGHT) * row_size);
+        if possible_cell < self.cells.len() && possible_cell >= 0 {
+            self.selected_cell_index = possible_cell;
+        }
+    }
+
     fn slice_to_current_word(&mut self) {
         self.current_word
             .push_str(&self.cells[self.selected_cell_index].content);
@@ -232,6 +241,9 @@ impl View for WordFinderView {
             }
             Event::Key(Key::Home) => self.selected_cell_index = 0,
             Event::Key(Key::End) => self.selected_cell_index = self.cells.len() - 1,
+            Event::Mouse {
+                event: MouseEvent::Release(MouseButton::Left),position,offset
+            } if position.fits_in_rect(offset + (0, 0), self.size) => self.handle_click(position, offset),
             Event::Key(Key::Enter) => self.slice_to_current_word(),
             Event::Key(Key::Tab) => return EventResult::Consumed(Some(self.submit_word())),
             Event::Key(Key::Del) => self.current_word = String::new(),
