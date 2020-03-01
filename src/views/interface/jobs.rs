@@ -1,3 +1,5 @@
+use crate::logger::curse_log;
+
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::views::interface::wordfinder::WordFinderView;
@@ -21,6 +23,11 @@ pub struct Job {
     pub job_type: JobType,
 }
 
+//pub fn complete_job(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
+fn complete_job() {
+    curse_log("Complete job");
+}
+
 pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
     siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
         view.set_content(
@@ -32,12 +39,13 @@ pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateMan
                 .clone(),
         );
     });
+    let word_finder_job = WordFinderView::new(2, move |siv| complete_job());
     siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
         view.remove_child(1);
         view.insert_child(
             1,
             ResizedView::with_full_screen(
-                Panel::new(WordFinderView::new(2))
+                Panel::new(word_finder_job)
                     .title("Workspace")
                     .title_position(HAlign::Left),
             ),

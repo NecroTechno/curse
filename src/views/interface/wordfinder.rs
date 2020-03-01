@@ -1,11 +1,12 @@
 use crate::logger::curse_log;
 
 use cursive::direction::Direction;
-use cursive::event::{Event, EventResult, Key};
+use cursive::event::{Event, EventResult, Key, Callback};
 use cursive::theme::ColorStyle;
 use cursive::traits::*;
 use cursive::vec::Vec2;
 use cursive::Printer;
+use cursive::Cursive;
 
 use rand::seq::SliceRandom;
 
@@ -52,6 +53,7 @@ pub struct WordFinderView {
     selected_cell_index: usize,
     size: Vec2,
     cells_sorted: bool,
+    complete_callback: Callback,
 }
 
 fn cell_content_generator() -> String {
@@ -75,7 +77,10 @@ fn words_generator(difficulty: u8) -> Vec<String> {
 }
 
 impl WordFinderView {
-    pub fn new(difficulty: u8) -> Self {
+    pub fn new<F>(difficulty: u8, cb: F) -> Self
+    where
+       F: 'static + Fn(&mut Cursive)
+    {
         let mut cells = Vec::new();
 
         let words = words_generator(difficulty);
@@ -115,6 +120,7 @@ impl WordFinderView {
             selected_cell_index: 0,
             size: Vec2::new(0, 0),
             cells_sorted: false,
+            complete_callback: Callback::from_fn(cb),
         }
     }
 
@@ -139,7 +145,7 @@ impl WordFinderView {
             .push_str(&self.cells[self.selected_cell_index].content);
     }
 
-    fn submit_word(&mut self) {
+    fn submit_word(&mut self) -> Callback {
         let submission = self.words.iter().position(|x| x == &self.current_word);
         match submission {
             Some(i) => {
@@ -148,6 +154,13 @@ impl WordFinderView {
             }
             None => (),
         };
+
+        if self.words.is_empty() {
+            (self.complete_callback.clone())
+        } else {
+            // must return a callback - probably could be handled better
+            Callback::from_fn((|_s| ()))
+        }
     }
 }
 
@@ -220,7 +233,7 @@ impl View for WordFinderView {
             Event::Key(Key::Home) => self.selected_cell_index = 0,
             Event::Key(Key::End) => self.selected_cell_index = self.cells.len() - 1,
             Event::Key(Key::Enter) => self.slice_to_current_word(),
-            Event::Key(Key::Tab) => self.submit_word(),
+            Event::Key(Key::Tab) => return EventResult::Consumed(Some(self.submit_word())),
             Event::Key(Key::Del) => self.current_word = String::new(),
             _ => return EventResult::Ignored,
         }
