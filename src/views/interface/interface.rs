@@ -3,7 +3,7 @@ use crate::state_retr;
 use crate::utils::{focus_se, view_open};
 use crate::vannah::animate;
 use crate::views::common::logo_ani_generator;
-use crate::views::interface::jobs::{JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME};
+use crate::views::interface::jobs::{JOB_TITLE_VIEW_NAME, WORKSPACE_VIEW_NAME, JobType};
 use crate::views::interface::VIEW_CATEGORY;
 use crate::views::notifications::{
     notification_content_generator, update_notifications, Notification, NOTIFICATION_VIEW_NAME,
@@ -40,6 +40,7 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
             state_retr!(state_manager).notifications.push(Notification {
                 text_content: text_content,
                 title: format!("Job ID {}", notif_title),
+                associated_job: JobType::MalwareHunter,
             });
             s.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
                 update_notifications(state_manager, view);

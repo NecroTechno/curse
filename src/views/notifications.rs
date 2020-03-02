@@ -15,6 +15,7 @@ pub const NOTIFICATION_VIEW_NAME: &str = "notification_view";
 pub struct Notification {
     pub text_content: String,
     pub title: String,
+    pub associated_job: JobType,
 }
 
 pub fn update_notifications(
@@ -43,6 +44,7 @@ pub fn update_notifications(
     }
 }
 
+// TODO: generate different content
 pub fn notification_content_generator(state_manager: &'static Mutex<StateManager>) -> String {
     format!("Hey {},\n\nI'm looking for someone to take care of this quick job for me. I'm swamped at the moment, can you do it for me?\n\nThanks!", &state_retr!(state_manager).name)
 }
@@ -74,9 +76,12 @@ fn notification_dialog_builder(
             let job_name = state_retr!(state_manager).notifications[notification_index]
                 .title
                 .clone();
+            let job_type = state_retr!(state_manager).notifications[notification_index]
+                .associated_job
+                .clone();
             &state_retr!(state_manager).add_job(Job {
                 name: job_name,
-                job_type: JobType::MalwareHunter,
+                job_type: job_type,
             });
             &state_retr!(state_manager)
                 .notifications

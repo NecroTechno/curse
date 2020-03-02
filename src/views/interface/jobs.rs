@@ -14,6 +14,7 @@ use std::sync::Mutex;
 pub const JOB_TITLE_VIEW_NAME: &str = "job_title_view";
 pub const WORKSPACE_VIEW_NAME: &str = "workspace_view";
 
+#[derive(Clone)]
 pub enum JobType {
     MalwareHunter,
 }
