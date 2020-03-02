@@ -40,14 +40,15 @@ pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateMan
                     .clone(),
             );
         });
-        let word_finder_job =
-            MalwareHunterView::new(2, move |siv| complete_job(siv, state_manager));
+        let new_job = match state_retr!(state_manager).job.as_ref().unwrap().job_type  {
+            JobType::MalwareHunter => MalwareHunterView::new(2, move |siv| complete_job(siv, state_manager))
+        };
         siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
             view.remove_child(1);
             view.insert_child(
                 1,
                 ResizedView::with_full_screen(
-                    Panel::new(word_finder_job)
+                    Panel::new(new_job)
                         .title("Workspace")
                         .title_position(HAlign::Left),
                 ),
