@@ -3,6 +3,7 @@ use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, view_open};
 use crate::views::intro::VIEW_CATEGORY;
+use crate::views::common::{COMPANY_NAME, SOFTWARE_NAME, POSITION_TITLE};
 
 use crate::views::interface::interface::interface;
 
@@ -17,7 +18,7 @@ pub fn intro_1(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
     view_open(siv, state_manager, VIEW_CATEGORY);
 
     let terms = TextView::new(
-        "Your privacy is *extremely* important to us.\r\n\r\nNot quite as important as us collecting all your delectable data. But still, pretty important. On a scale of one to ten, your privacy ranks a very respectable five.\r\n\r\nYou can trust that - after we've analysed and processed and siphoned every last bit of commercial value out of your data - the useless residue overflowing our data lakes will be treated in full compliance with the best privacy legislation lobbyist money can buy.\r\n\r\nAnd that's a promise.\r\n\r\nBrian Dugnutt - Chief Data Officer at SHADOW."
+        &format!("Your privacy is *extremely* important to us.\r\n\r\nNot quite as important as us collecting all your delectable data. But still, pretty important. On a scale of one to ten, your privacy ranks a very respectable five.\r\n\r\nYou can trust that - after we've analysed and processed and siphoned every last bit of commercial value out of your data - the useless residue overflowing our data lakes will be treated in full compliance with the best privacy legislation lobbyist money can buy.\r\n\r\nAnd that's a promise.\r\n\r\nBrian Dugnutt - Chief Data Officer at {}.", COMPANY_NAME)
     );
 
     siv.add_layer(ResizedView::with_max_size(
@@ -44,7 +45,7 @@ fn intro_2(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
     view_open(siv, state_manager, VIEW_CATEGORY);
 
     let text = TextView::new(
-        "Hello!\r\n\r\nYou have been successful in the recent round of applications for the role of OPERATOR at SHADOW. Congratulations!\r\n\r\nIn years past, OPERATORS were full time, on-site hires. However, at SHADOW, we take pride in innovation and worker satisfaction; we realised our employees didn't want to endure long commutes to labour away in a cramped office. That's why all our OPERATORS have been transitioned to completely independent, remote contractors. We want you to have independence and freedom in your interactions with our company - as such, we see our OPERATORS less like employees and more like partners.\r\n\r\nThis is how you can conduct your work right from the comfort of your own home!"
+        &format!("Hello!\r\n\r\nYou have been successful in the recent round of applications for the role of {a} at {b}. Congratulations!\r\n\r\nIn years past, OPERATORS were full time, on-site hires. However, at {b}, we take pride in innovation and worker satisfaction; we realised our employees didn't want to endure long commutes to labour away in a cramped office. That's why all our {a}S have been transitioned to completely independent, remote contractors. We want you to have independence and freedom in your interactions with our company - as such, we see our {a}S less like employees and more like partners.\r\n\r\nThis is how you can conduct your work right from the comfort of your own home!", a = POSITION_TITLE, b = COMPANY_NAME)
     );
 
     siv.add_layer(ResizedView::with_max_size(
@@ -113,7 +114,7 @@ fn intro_5(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
     view_open(siv, state_manager, VIEW_CATEGORY);
 
     let text = TextView::new(
-        format!("Welcome {}.\r\n\r\nSoon you will be introduced to the CURSE interface. It might be a little overwhelming at first, but don't worry, we trust in a short amount of time you will feel comfortable, and most importantly, productive while using it.", &state_retr!(state_manager).name)
+        format!("Welcome {}.\r\n\r\nSoon you will be introduced to the {b} interface. It might be a little overwhelming at first, but don't worry, we trust in a short amount of time you will feel comfortable, and most importantly, productive while using it.", &state_retr!(state_manager).name, b = SOFTWARE_NAME)
     );
 
     siv.add_layer(ResizedView::with_max_size(
