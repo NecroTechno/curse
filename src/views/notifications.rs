@@ -57,52 +57,6 @@ fn notification_dialog_builder(
     notification: &Notification,
     notification_index: usize,
 ) {
-    // TODO: make sure on removal of child that the focus is moved to menu
-    fn accept_job(
-        s: &mut Cursive,
-        state_manager: &'static Mutex<StateManager>,
-        notification_index: usize,
-    ) {
-        button_press_se(state_manager);
-        if state_retr!(state_manager).has_job() {
-            s.add_layer(
-                Dialog::around(TextView::new("You already have a job in progress!")).button(
-                    "Ok",
-                    move |s| {
-                        button_press_se(state_manager);
-                        s.pop_layer();
-                    },
-                ),
-            );
-        } else {
-            let job_name = state_retr!(state_manager).notifications[notification_index]
-                .title
-                .clone();
-            let job_type = state_retr!(state_manager).notifications[notification_index]
-                .associated_job
-                .clone();
-            &state_retr!(state_manager).add_job(Job {
-                name: job_name,
-                job_type: job_type,
-            });
-            &state_retr!(state_manager)
-                .notifications
-                .remove(notification_index);
-            update_job_view(s, state_manager);
-            let mut move_view = false;
-            s.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
-                update_notifications(state_manager, view);
-                if view.is_empty() {
-                    move_view = true;
-                }
-            });
-            if move_view {
-                s.focus(&Selector::Name(MENU_VIEW_NAME));
-            }
-            s.pop_layer();
-        }
-    }
-
     let popup = Dialog::around(TextView::new(&notification.text_content))
         .title(&notification.title)
         .button("Accept Job", move |s| {
@@ -118,4 +72,49 @@ fn notification_dialog_builder(
             focus_se(state_manager)
         }),
     )
+}
+
+fn accept_job(
+    s: &mut Cursive,
+    state_manager: &'static Mutex<StateManager>,
+    notification_index: usize,
+) {
+    button_press_se(state_manager);
+    if state_retr!(state_manager).has_job() {
+        s.add_layer(
+            Dialog::around(TextView::new("You already have a job in progress!")).button(
+                "Ok",
+                move |s| {
+                    button_press_se(state_manager);
+                    s.pop_layer();
+                },
+            ),
+        );
+    } else {
+        let job_name = state_retr!(state_manager).notifications[notification_index]
+            .title
+            .clone();
+        let job_type = state_retr!(state_manager).notifications[notification_index]
+            .associated_job
+            .clone();
+        &state_retr!(state_manager).add_job(Job {
+            name: job_name,
+            job_type: job_type,
+        });
+        &state_retr!(state_manager)
+            .notifications
+            .remove(notification_index);
+        update_job_view(s, state_manager);
+        let mut move_view = false;
+        s.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
+            update_notifications(state_manager, view);
+            if view.is_empty() {
+                move_view = true;
+            }
+        });
+        if move_view {
+            s.focus(&Selector::Name(MENU_VIEW_NAME));
+        }
+        s.pop_layer();
+    }
 }
