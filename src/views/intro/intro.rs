@@ -2,8 +2,8 @@
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se, view_open};
+use crate::views::common::{COMPANY_NAME, POSITION_TITLE, SOFTWARE_NAME};
 use crate::views::intro::VIEW_CATEGORY;
-use crate::views::common::{COMPANY_NAME, SOFTWARE_NAME, POSITION_TITLE};
 
 use crate::views::interface::interface::interface;
 

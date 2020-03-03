@@ -1,11 +1,13 @@
 use crate::state::StateManager;
 use crate::state_retr;
 use crate::utils::{button_press_se, focus_se};
-use crate::views::interface::jobs::{update_job_view, Job, JobType};
+use crate::views::interface::interface::MENU_VIEW_NAME;
+use crate::views::interface::jobs::{update_job_view, Job, JobType, WORKSPACE_VIEW_NAME};
 
 use cursive::event::EventTrigger;
 
-use cursive::views::{Button, Dialog, ListView, OnEventView, TextView};
+use cursive::view::{Selector, View};
+use cursive::views::{Button, Dialog, LinearLayout, ListView, OnEventView, TextView};
 use cursive::Cursive;
 
 use std::sync::Mutex;
@@ -86,10 +88,17 @@ fn notification_dialog_builder(
             &state_retr!(state_manager)
                 .notifications
                 .remove(notification_index);
+            update_job_view(s, state_manager);
+            let mut move_view = false;
             s.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
                 update_notifications(state_manager, view);
+                if view.is_empty() {
+                    move_view = true;
+                }
             });
-            update_job_view(s, state_manager);
+            if move_view {
+                s.focus(&Selector::Name(MENU_VIEW_NAME));
+            }
             s.pop_layer();
         }
     }
