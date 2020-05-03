@@ -49,6 +49,22 @@ pub fn interface(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>)
                 focus_se(state_manager)
             }),
     );
+
+    // Start interface with 3 jobs
+    for x in 0..3 {
+        let mut rng = rand::thread_rng();
+        let notif_title: u8 = rng.gen();
+        let text_content = notification_content_generator(state_manager);
+        state_retr!(state_manager).notifications.push(Notification {
+            text_content: text_content,
+            title: format!("Job ID {}", notif_title),
+            associated_job: JobType::MalwareHunter,
+        });
+    }
+
+    siv.call_on_name(NOTIFICATION_VIEW_NAME, |view: &mut ListView| {
+        update_notifications(state_manager, view);
+    });
 }
 
 fn generate_job_ui_view() -> NamedView<LinearLayout> {
