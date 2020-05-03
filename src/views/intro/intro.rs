@@ -114,7 +114,7 @@ fn intro_5(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
     view_open(siv, state_manager, VIEW_CATEGORY);
 
     let text = TextView::new(
-        format!("Welcome {}.\r\n\r\nSoon you will be introduced to the {b} interface. It might be a little overwhelming at first, but don't worry, we trust in a short amount of time you will feel comfortable, and most importantly, productive while using it.", &state_retr!(state_manager).name, b = SOFTWARE_NAME)
+        format!("Welcome {}.\r\n\r\nSoon you will be introduced to the {b} interface. It might be a little overwhelming at first, but don't worry, we trust in a short amount of time you will feel comfortable, and most importantly, productive while using it. Your role as {a} will be to help our end users solve their issues with our software. Just make sure to accept the job notifcations as they come in.", &state_retr!(state_manager).name, a = POSITION_TITLE, b = SOFTWARE_NAME)
     );
 
     siv.add_layer(ResizedView::with_max_size(

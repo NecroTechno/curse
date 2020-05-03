@@ -31,46 +31,54 @@ pub fn complete_job(siv: &mut Cursive, state_manager: &'static Mutex<StateManage
 
 pub fn update_job_view(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
     if state_retr!(state_manager).has_job() {
-        siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
-            view.set_content(
-                state_retr!(state_manager)
-                    .job
-                    .as_ref()
-                    .unwrap()
-                    .name
-                    .clone(),
-            );
-        });
-        let new_job = match state_retr!(state_manager).job.as_ref().unwrap().job_type {
-            JobType::MalwareHunter => {
-                MalwareHunterView::new(2, move |siv| complete_job(siv, state_manager))
-            }
-        };
-        siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
-            view.remove_child(1);
-            view.insert_child(
-                1,
-                ResizedView::with_full_screen(
-                    Panel::new(new_job)
-                        .title("Workspace")
-                        .title_position(HAlign::Left),
-                ),
-            );
-        });
+        job_view_with_job(siv, state_manager);
     } else {
-        siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
-            view.set_content("");
-        });
-        siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
-            view.remove_child(1);
-            view.insert_child(
-                1,
-                ResizedView::with_full_screen(
-                    Panel::new(DummyView)
-                        .title("Workspace")
-                        .title_position(HAlign::Left),
-                ),
-            );
-        });
+        job_view_without_job(siv, state_manager);
     }
+}
+
+fn job_view_with_job(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
+    siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
+        view.set_content(
+            state_retr!(state_manager)
+                .job
+                .as_ref()
+                .unwrap()
+                .name
+                .clone(),
+        );
+    });
+    let new_job = match state_retr!(state_manager).job.as_ref().unwrap().job_type {
+        JobType::MalwareHunter => {
+            MalwareHunterView::new(2, move |siv| complete_job(siv, state_manager))
+        }
+    };
+    siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
+        view.remove_child(1);
+        view.insert_child(
+            1,
+            ResizedView::with_full_screen(
+                Panel::new(new_job)
+                    .title("Workspace")
+                    .title_position(HAlign::Left),
+            ),
+        );
+    });
+}
+
+fn job_view_without_job(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
+    siv.call_on_name(JOB_TITLE_VIEW_NAME, |view: &mut TextView| {
+        view.set_content("");
+    });
+    siv.call_on_name(WORKSPACE_VIEW_NAME, |view: &mut LinearLayout| {
+        view.remove_child(1);
+        view.insert_child(
+            1,
+            ResizedView::with_full_screen(
+                Panel::new(DummyView)
+                    .title("Workspace")
+                    .title_position(HAlign::Left),
+            ),
+        );
+    });
 }
