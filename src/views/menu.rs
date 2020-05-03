@@ -49,6 +49,10 @@ pub fn menu(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
                         }
                     }
                 })
+                .button("Credits", move |s| {
+                    button_press_se(state_manager);
+                    credits_popup(s, state_manager);
+                })
                 .button("Options", move |s| {
                     button_press_se(state_manager);
                     options_popup(s, state_manager);
@@ -65,6 +69,21 @@ pub fn menu(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
 fn load_error_popup(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>, message: &str) {
     let popup_inner = OnEventView::new(Dialog::around(TextView::new(message)).button(
         "Ok",
+        move |s| {
+            button_press_se(state_manager);
+            s.pop_layer();
+        },
+    ))
+    .on_pre_event_inner(EventTrigger::arrows(), move |_s, _e| {
+        focus_se(state_manager)
+    });
+
+    siv.screen_mut().add_layer(popup_inner);
+}
+
+fn credits_popup(siv: &mut Cursive, state_manager: &'static Mutex<StateManager>) {
+    let popup_inner = OnEventView::new(Dialog::around(TextView::new("Music thanks to Patrick de Arteaga.")).button(
+        "Nice!",
         move |s| {
             button_press_se(state_manager);
             s.pop_layer();

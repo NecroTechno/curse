@@ -5,8 +5,14 @@
 linux: libasound2
 
 
-## TODO
+### TODO
 
 - More jobs
 - Progress handler
 - Writing
+
+
+### Known issues
+
+- Flickering on refresh
+- Double tap to minimize/maximise window on Windows crashes the game (???)
